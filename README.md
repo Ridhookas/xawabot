@@ -80,7 +80,7 @@ apt install wget curl git ffmpeg imagemagick build-essential libcairo2-dev libpa
 ubuntu
 curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
 apt install -y nodejs gcc g++ make
-git clone https://github.com/BochilGaming/games-wabot -b multi-device
+git clone https://github.com/Rexashh/xawabot -b multi-device
 cd games-wabot
 npm install
 npm update
@@ -96,7 +96,7 @@ npm update
 * Download And Install ImageMagick [`Click Here`](https://imagemagick.org/script/download.php)
 
 ```bash
-git clone https://github.com/BochilGaming/games-wabot -b multi-device
+git clone https://github.com/Rexashh/xawabot -b multi-device
 cd games-wabot
 npm install
 npm update
