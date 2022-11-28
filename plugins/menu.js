@@ -1,12 +1,10 @@
-import db from '../lib/database.js'
-import { promises } from 'fs'
-import { join } from 'path'
-import { xpRange } from '../lib/levelling.js'
-import { plugins } from '../lib/plugins.js'
+let fs = require('fs')
+let path = require('path')
+let levelling = require('../lib/levelling')
 let tags = {
   'main': 'Main',
+  'rpg': 'Epic RPG',
   'game': 'Game',
-  'rpg': 'RPG Games',
   'xp': 'Exp & Limit',
   'sticker': 'Sticker',
   'kerang': 'Kerang Ajaib',
@@ -33,35 +31,31 @@ let tags = {
 }
 const defaultMenu = {
   before: `
-╭─「 %me 🤖」
-│ 👋🏻 Hai, %name!
+╭─「 %me 」
+│ %ucapan, %name!
 │
-│ 🧱 Limit : *%limit Limit*
-│ 🦸🏼‍♂️ Role : *%role*
-│ 🔼 Level : *%level (%exp / %maxexp)*
-│ 💫 Total XP : %totalexp ✨
-│ 
-│ 📅 Tanggal: *%week, %date*
-│ 🕰️ Waktu: *%time*
+│ Tanggal: *%week %weton, %date*
+│ Tanggal Islam: *%dateIslamic*
+│ Waktu: *%time*
 │
-│ 📈 Uptime: *%uptime (%muptime)*
-│ 📊 Database: %rtotalreg of %totalreg
+│ Uptime: *%uptime (%muptime)*
+│ Database: %rtotalreg of %totalreg
+│ Github:
+│ %github
 ╰────
 %readmore`.trimStart(),
   header: '╭─「 %category 」',
   body: '│ • %cmd %islimit %isPremium',
   footer: '╰────\n',
   after: `
-*%npmname* | %version
+*%npmname@^%version*
 ${'```%npmdesc```'}
 `,
 }
-let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
+let handler = async (m, { conn, usedPrefix: _p }) => {
   try {
-    let _package = JSON.parse(await promises.readFile(join(__dirname, '../package.json')).catch(_ => ({}))) || {}
-    let { exp, limit, level, role } = db.data.users[m.sender]
-    let { min, xp, max } = xpRange(level, global.multiplier)
-    let name = await conn.getName(m.sender)
+    let package = JSON.parse(await fs.promises.readFile(path.join(__dirname, '../package.json')).catch(_ => '{}'))
+    let name = conn.getName(m.sender)
     let d = new Date(new Date + 3600000)
     let locale = 'id'
     // d.getTimeZoneOffset()
@@ -96,9 +90,9 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     }
     let muptime = clockString(_muptime)
     let uptime = clockString(_uptime)
-    let totalreg = Object.keys(db.data.users).length
-    let rtotalreg = Object.values(db.data.users).filter(user => user.registered == true).length
-    let help = Object.values(plugins).filter(plugin => !plugin.disabled).map(plugin => {
+    let totalreg = Object.keys(global.DATABASE._data.users).length
+    let rtotalreg = Object.values(global.DATABASE._data.users).filter(user => user.registered == true).length
+    let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => {
       return {
         help: Array.isArray(plugin.tags) ? plugin.help : [plugin.help],
         tags: Array.isArray(plugin.tags) ? plugin.tags : [plugin.tags],
@@ -117,7 +111,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     let header = conn.menu.header || defaultMenu.header
     let body = conn.menu.body || defaultMenu.body
     let footer = conn.menu.footer || defaultMenu.footer
-    let after = conn.menu.after || (conn.user.jid == conn.user.jid ? '' : `Powered by https://wa.me/${conn.user.jid.split`@`[0]}`) + defaultMenu.after
+    let after = conn.menu.after || (conn.user.jid == global.conn.user.jid ? '' : `Powered by https://wa.me/${global.conn.user.jid.split`@`[0]}`) + defaultMenu.after
     let _text = [
       before,
       ...Object.keys(tags).map(tag => {
@@ -135,29 +129,26 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
       }),
       after
     ].join('\n')
-    let text = typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : ''
+    text = typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : ''
     let replace = {
       '%': '%',
       p: _p, uptime, muptime,
-      me: conn.getName(conn.user.jid),
-      npmname: _package.name,
-      npmdesc: _package.description,
-      version: _package.version,
-      exp: exp - min,
-      maxexp: xp,
-      totalexp: exp,
-      xp4levelup: max - exp,
-      github: _package.homepage ? _package.homepage.url || _package.homepage : '[unknown github url]',
-      level, limit, name, weton, week, date, dateIslamic, time, totalreg, rtotalreg, role,
+      me: conn.user.name,
+      ucapan: ucapan(),
+      npmname: package.name,
+      npmdesc: package.description,
+      version: package.version,
+      github: package.homepage ? package.homepage.url || package.homepage : '[unknown github url]',
+      name, weton, week, date, dateIslamic, time, totalreg, rtotalreg,
       readmore: readMore
     }
     text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
-    const pp = await conn.profilePictureUrl(conn.user.jid).catch(_ => './src/avatar_contact.png')
-    conn.sendHydrated(m.chat, text.trim(), author, pp, 'https://github.com/BochilGaming/games-wabot', 'Github', null, null, [
-      ['Donate', '/donasi'],
-      ['Speed', '/ping'],
-      ['Owner', '/owner']
-    ], m)
+    let pp = await conn.getProfilePicture(conn.user.jid).catch(_ => path.join(__dirname, '../src/avatar_contact.png'))
+    conn.sendButton(m.chat,text.trim(), author,  pp,  [
+  ['Ping',  '/ping'],
+  ['Info',  '/info'],
+  ['Owner',  '/owner']
+], { quoted: m}).catch(_ => conn.sendFile(m.chat, pp, 'menu.jpg', text.trim(), m)).catch(_ => conn.reply(m.chat, text.trim(), m))
   } catch (e) {
     conn.reply(m.chat, 'Maaf, menu sedang error', m)
     throw e
@@ -166,10 +157,19 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 handler.help = ['menu', 'help', '?']
 handler.tags = ['main']
 handler.command = /^(menu|help|\?)$/i
+handler.owner = false
+handler.mods = false
+handler.premium = false
+handler.group = false
+handler.private = false
 
+handler.admin = false
+handler.botAdmin = false
+
+handler.fail = null
 handler.exp = 3
 
-export default handler
+module.exports = handler
 
 const more = String.fromCharCode(8206)
 const readMore = more.repeat(4001)
@@ -179,4 +179,21 @@ function clockString(ms) {
   let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
   let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
   return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')
+}
+function ucapan() {
+  const time = (new Date().getUTCHours() + 7) % 24
+  res = "Woi. Pagi"
+  if (time >= 4) {
+    res = "Selamat Pagi"
+  }
+  if (time >= 12) {
+    res = "Selamat Siang"
+  }
+  if (time >= 15) {
+    res = "Selamat Sore"
+  }
+  if (time >= 19) {
+    res = "Selamat Malam"
+  }
+  return res
 }
