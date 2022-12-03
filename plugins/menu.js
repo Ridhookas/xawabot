@@ -33,27 +33,27 @@ let tags = {
 }
 const defaultMenu = {
   before: `
-╭─「 %me 🤖」
-│ 👋🏻 Hai, %name!
-│
-│ 🧱 Limit : *%limit Limit*
-│ 🦸🏼‍♂️ Role : *%role*
-│ 🔼 Level : *%level (%exp / %maxexp)*
-│ 💫 Total XP : %totalexp ✨
-│ 
-│ 📅 Tanggal: *%week, %date*
-│ 🕰️ Waktu: *%time*
-│
-│ 📈 Uptime: *%uptime (%muptime)*
-│ 📊 Database: %rtotalreg of %totalreg
-╰────
+Halo Aku %me 🤖
+ 👋🏻 Hai, %name!
+
+ 🧱 Limit : *%limit Limit*
+ 🦸🏼‍♂️  Role : *%role*
+ 🔼 Level : *%level (%exp / %maxexp)*
+ 💫 Total XP : %totalexp ✨
+ 
+ 📅 Tanggal: *%week, %date*
+ 🕰️ Waktu  : *%time*
+
+  📈 Uptime : *%uptime (%muptime)*
+  📊 DB     : %rtotalreg of %totalreg
+────
 %readmore`.trimStart(),
-  header: '╭─「 %category 」',
-  body: '│ • %cmd %islimit %isPremium',
-  footer: '╰────\n',
+  header: ' 🚀 %category ',
+  body: '• %cmd %islimit %isPremium',
+  footer: '___\n',
   after: `
-*%npmname* | %version
-${'```%npmdesc```'}
+Hikari Robot | 0.1
+${'```This Bot made By Rexashh```'}
 `,
 }
 let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
