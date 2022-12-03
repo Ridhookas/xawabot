@@ -1,31 +1,42 @@
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-    conn.math = conn.math ? conn.math : {}
-    const buttons = Object.keys(modes).map(v => [v, `${usedPrefix}${command} ${v}`])
-    if (args.length < 1) return conn.sendButton(m.chat, `
-  Mode: ${Object.keys(modes).join(' | ')}
-  Contoh penggunaan: ${usedPrefix}math medium
-  `.trim(), author, null, buttons, m)
-    let mode = args[0].toLowerCase()
-    if (!(mode in modes)) return conn.sendButton(m.chat, `
-  Mode: ${Object.keys(modes).join(' | ')}
-  Contoh penggunaan: ${usedPrefix}math medium
-    `.trim(), author, null, buttons, m)
-    let id = m.chat
-    if (id in conn.math) return conn.reply(m.chat, 'Masih ada soal belum terjawab di chat ini', conn.math[id][0])
-    let math = genMath(mode)
-    conn.math[id] = [
-        await conn.reply(m.chat, `Berapa hasil dari *${math.str}*?\n\nTimeout: ${(math.time / 1000).toFixed(2)} detik\nBonus Jawaban Benar: ${math.bonus} XP`, m),
-        math, 4,
-        setTimeout(() => {
-            if (conn.math[id]) conn.sendButton(m.chat, `Waktu habis!\nJawabannya adalah ${math.result}`, author, null, [['again', `${usedPrefix}${command} ${math.mode}`], ...buttons], conn.math[id][0])
-            delete conn.math[id]
-        }, math.time)
-    ]
+global.math = global.math ? global.math : {}
+let { MessageType } = require('@adiwajshing/baileys-md')
+let handler = async(m, { conn, args, usedPrefix, DevMode }) => {
+    try {
+        if (args.length < 1) return conn.reply(m.chat, `
+Mode: ${Object.keys(modes).join(' | ')}
+Contoh penggunaan: ${usedPrefix}math medium
+`.trim(), m)
+        let mode = args[0].toLowerCase()
+        if (!(mode in modes)) return conn.reply(m.chat, `
+Mode: ${Object.keys(modes).join(' | ')}
+Contoh penggunaan: ${usedPrefix}math medium
+`.trim(), m)
+        let id = m.chat
+        if (id in global.math) return conn.reply(m.chat, 'Masih ada soal belum terjawab di chat ini', global.math[id][0])
+        let math = genMath(mode)
+        global.math[id] = [
+            await conn.reply(m.chat, `Berapa hasil dari *${math.str}*?\n\nTimeout: ${(math.time / 1000).toFixed(2)} detik\nBonus Jawaban Benar: ${math.bonus} XP`, m),
+            math, 4,
+            setTimeout(() => {
+                if (global.math[id]) conn.reply(m.chat, `Waktu habis!\nJawabannya adalah ${math.result}`, global.math[id][0])
+                delete global.math[id]
+            }, math.time)
+        ]
+    } catch (e) {
+        console.log(e)
+        m.reply('error!!')
+        if (DevMode) {
+            for (let jid of global.owner.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').filter(v => v != conn.user.jid)) {
+                conn.sendMessage(jid, 'Math.js error\nNo: *' + m.sender.split `@` [0] + '*\nCommand: *' + m.text + '*\n\n*' + e + '*', MessageType.text)
+            }
+        }
+    }
 }
 handler.help = ['math <mode>']
 handler.tags = ['game']
 handler.command = /^math/i
 
+module.exports = handler
 
 let modes = {
     noob: [-3, 3, -3, 3, '+-', 15000, 10],
@@ -50,27 +61,23 @@ function genMath(mode) {
     let b = randomInt(b1, b2)
     let op = pickRandom([...ops])
     let result = (new Function(`return ${a} ${op.replace('/', '*')} ${b < 0 ? `(${b})` : b}`))()
-    if (op == '/') [a, result] = [result, a]
-    return {
-        str: `${a} ${operators[op]} ${b}`,
-        mode,
-        time,
-        bonus,
-        result
-    }
+  if (op == '/') [a, result] = [result, a]
+  return {
+    str: `${a} ${operators[op]} ${b}`,
+    mode,
+    time,
+    bonus,
+    result
+  }
 }
 
 function randomInt(from, to) {
-    if (from > to) [from, to] = [to, from]
-    from = Math.floor(from)
-    to = Math.floor(to)
-    return Math.floor((to - from) * Math.random() + from)
+  if (from > to) [from, to] = [to, from]
+  from = Math.floor(from)
+  to = Math.floor(to)
+  return Math.floor((to - from) * Math.random() + from)
 }
 
 function pickRandom(list) {
-    return list[Math.floor(Math.random() * list.length)]
+  return list[Math.floor(Math.random() * list.length)]
 }
-
-handler.modes = modes
-
-export default handler
