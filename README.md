@@ -1,4 +1,9 @@
-# xawabot
+
+<p align="center">
+  <img src="https://telegra.ph/file/d28a920ffe14ea704d2f4.png" height="300px"/>
+</p>
+
+# XAWABOT 🔥
 
 ### FOR TERMUX USER
 1. Type mentioned below given commands one by one in Termux.
