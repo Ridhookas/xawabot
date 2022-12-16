@@ -16,12 +16,19 @@ const { name, author } = require(join(__dirname, './package.json')) // https://w
 const { say } = cfonts
 const rl = createInterface(process.stdin, process.stdout)
 
-say('XaWhatsAppBot\nWhatsApp Bot', {
-  font: 'chrome',
-  align: 'center',
-  gradient: ['blue', 'magenta']
+say('XA-BOT\nWHATSAPP', {
+    font: '3d',
+    colors: ["#0ff",'green',"#ff0"],
+    align: 'center',
+    gradient: false,
+    background: "transparent",
+    letterSpacing: 1,
+    lineHeight: 1,
+    space: true,
+    maxLenght: '0'
+
 })
-say(`'${name}' By @${author.name || author}`, {
+say('Bot by Rexa Aditya', {
   font: 'console',
   align: 'center',
   gradient: ['red', 'magenta']
