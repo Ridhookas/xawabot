@@ -5,6 +5,11 @@
 
 # XAWABOT 🔥
 
+
+### DEPLOY HEROKU
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://github.com/Rexashh/xawabot/multi-device)
+
 ### FOR TERMUX USER
 1. Type mentioned below given commands one by one in Termux.
 ```sh
