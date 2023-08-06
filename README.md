@@ -18,7 +18,8 @@ $ pkg install git -y
 $ pkg install nodejs -y
 $ pkg install ffmpeg -y
 $ pkg install imagemagick -y
-$ git clone https://github.com/Rexashh/xawabot -b multi-device
+$ git clone https://github.com/Ridhookas
+/xawabot -b multi-device
 $ cd xawabot
 $ npm i 
 ```
@@ -66,7 +67,7 @@ apt install wget curl git ffmpeg imagemagick build-essential libcairo2-dev libpa
 ubuntu
 curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
 apt install -y nodejs gcc g++ make
-git clone https://github.com/Rexashh/xawabot -b multi-device
+git clone https://github.com/Ridhookas/xawabot -b multi-device
 cd xawabot
 npm install
 npm update
@@ -82,7 +83,7 @@ npm update
 * Download And Install ImageMagick [`Click Here`](https://imagemagick.org/script/download.php)
 
 ```bash
-git clone https://github.com/Rexashh/xawabot -b multi-device
+git clone https://github.com/Ridhookas/xawabot -b multi-device
 cd games-wabot
 npm install
 npm update
@@ -176,11 +177,11 @@ conn.sendButton(
 )
 
 // example 
-conn.sendButton(m.chat, 'Hello world!', '@BochilGaming', null, [
+conn.sendButton(m.chat, 'Hello world!', '@Ridhookas', null, [
       ['Hello', 'hello'], ['Bye', 'bye']
 ])
 // example button location
-conn.sendButton(m.chat, 'Hello world!', '@BochilGaming', 'https://github.com/BochilGaming', 
+conn.sendButton(m.chat, 'Hello world!', '@Ridhookas', 'https://github.com/Ridhookas', 
       [['Hello', 'hello'], ['Bye', 'bye']], 
       null, { asLocation: true }
 )
@@ -189,7 +190,7 @@ conn.sendButton(m.chat, 'Hello world!', '@BochilGaming', 'https://github.com/Boc
 
 ### Why my plugins not working in this multi-device?
 > Please cek syntax error on your plugins. and maybe your script still using CJS
-> This multi-device script use ESM and CJS [(legacy code)](https://github.com/BochilGaming/games-wabot/tree/main) not support yet. Learn more about [ESM](https://nodejs.org/api/esm.html)
+> This multi-device script use ESM and CJS [(legacy code)](https://github.com/Ridhookas/games-wabot/tree/main) not support yet. Learn more about [ESM](https://nodejs.org/api/esm.html)
 
 
 ### How to delete session?
@@ -197,7 +198,7 @@ conn.sendButton(m.chat, 'Hello world!', '@BochilGaming', 'https://github.com/Boc
 
 
 ### Why i can't scan qr code?
-> if your error like this ```(node:7016) UnhandledPromiseRejectionWarning: TypeError [ERR_INVALID_ARG_TYPE]: The "key" argument must be of type string or an instance of Buffer, TypedArray, DataView, or KeyObject. Received undefined``` you can use [multi-device branch](https://github.com/BochilGaming/games-wabot/tree/multi-device)
+> if your error like this ```(node:7016) UnhandledPromiseRejectionWarning: TypeError [ERR_INVALID_ARG_TYPE]: The "key" argument must be of type string or an instance of Buffer, TypedArray, DataView, or KeyObject. Received undefined``` you can use [multi-device branch](https://github.com/Ridhookas/games-wabot/tree/multi-device)
 
 
 ### How to change owner number?
